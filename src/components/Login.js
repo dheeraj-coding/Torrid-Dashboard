@@ -4,8 +4,13 @@ import {
     Typography,
     TextField,
     Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogContentText,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import fireb from '../fireb';
 const styles = (theme) => ({
     paper: {
         [theme.breakpoints.up('md')]: {
@@ -25,6 +30,28 @@ const styles = (theme) => ({
     }
 });
 class Login extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            dialogContent: '',
+            dialogTitle: '',
+            dialogOpen: false
+        };
+        this.handleLogin = this.handleLogin.bind(this);
+        this.handleDialogClose = this.handleDialogClose.bind(this);
+    }
+    handleLogin(event) {
+        const username = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        fireb.auth().signInWithEmailAndPassword(username, pass).then((res) => {
+            this.props.history.push('/dashboard');
+        }).catch((err) => {
+            this.setState({ dialogOpen: true, dialogContent: 'Invalid Username or Password', dialogTitle: 'Login Failed' });
+        });
+    }
+    handleDialogClose(event) {
+        this.setState({ dialogOpen: false });
+    }
     render() {
         const { classes } = this.props;
         return (
@@ -39,7 +66,7 @@ class Login extends Component {
                         className={classes.textField}
                         required
                         id='username'
-                        label='Username'
+                        label='Email'
                     />
                     <br />
                     <TextField
@@ -51,10 +78,20 @@ class Login extends Component {
                     />
                     <br />
                     <br />
-                    <Button variant='contained' color='primary'>
+                    <Button variant='contained' color='primary' onClick={this.handleLogin}>
                         Login
                     </Button>
                 </Paper>
+                <Dialog open={this.state.dialogOpen}
+                    onClose={this.handleDialogClose}
+                >
+                    <DialogTitle>{this.state.dialogTitle}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {this.state.dialogContent}
+                        </DialogContentText>
+                    </DialogContent>
+                </Dialog>
             </div>
         );
     }

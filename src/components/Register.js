@@ -1,9 +1,20 @@
 import React, { Component } from 'react';
 import {
-    Paper, Typography, TextField, Button,
+    Paper,
+    Typography,
+    TextField,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { geolocated } from 'react-geolocated';
+import { withRouter } from 'react-router-dom';
+import fireb from '../fireb';
+import axios from 'axios';
+
 const styles = (theme) => ({
     paper: {
         [theme.breakpoints.up('md')]: {
@@ -28,20 +39,51 @@ class Register extends Component {
         this.state = {
             username: '',
             password: '',
-            errorText: 'Enable Geolocation.',
+            errorText: '',
             errorState: false,
+            dialogContent: '',
+            dialogTitle: '',
+            dialogOpen: false
         };
         this.handleRegister = this.handleRegister.bind(this);
+        this.handleDialogClose = this.handleDialogClose.bind(this);
     }
     handleRegister(event) {
         const username = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
         const repeat = document.getElementById('repeatpassword').value;
-        if (pass === repeat) {
-            this.setState({ username: username, password: pass, errorState: false });
+        if (pass === repeat && this.props.isGeolocationEnabled) {
+            this.setState({ username: username, password: pass, errorState: false, errorText: '' });
+            fireb.auth().createUserWithEmailAndPassword(username, pass).then((res) => {
+                axios({
+                    method: 'POST',
+                    url: 'http://localhost:8080/hospitals',
+                    data: {
+                        name: username,
+                        password: pass,
+                        repeat: repeat,
+                        lat: this.props.coords.latitude,
+                        lon: this.props.coords.longitude,
+                    }
+                }).then((res) => {
+                    this.props.history.push('/login');
+                }, (err) => {
+                    this.setState({ dialogOpen: true, dialogContent: 'Sorry! Our servers are facing issues please try again in sometime.', dialogTitle: 'Registration Failed' });
+                });
+            }).catch((err) => {
+                this.setState({ dialogOpen: true, dialogContent: 'Sorry! Our servers are facing issues please try again in sometime.', dialogTitle: 'Registration Failed' });
+            });
+
         } else {
-            this.setState({ errorText: 'Passwords don\'t match', errorState: true });
+            if (!this.props.isGeolocationEnabled) {
+                this.setState({ errorText: 'Geolocation must be enabled', errorState: true });
+            } else {
+                this.setState({ errorText: 'Passwords don\'t match', errorState: true });
+            }
         }
+    }
+    handleDialogClose(event) {
+        this.setState({ dialogOpen: false });
     }
     render() {
         const { classes } = this.props;
@@ -56,7 +98,7 @@ class Register extends Component {
                         required
                         className={classes.textField}
                         id='username'
-                        label='Username'
+                        label='Email'
                     />
                     <TextField
                         required
@@ -74,22 +116,32 @@ class Register extends Component {
                     />
                     <br />
                     <br />
-                    <Button variant='contained' color='primary' disabled={!this.props.isGeolocationEnabled} onClick={this.handleRegister}>
+                    <Button variant='contained' color='primary' onClick={this.handleRegister}>
                         Register
                     </Button>
                     <br />
                     <br />
-                    <Typography style={{ display: this.state.errorState ? 'initial' : 'none' }} variant='body2' color='error'>
+                    <Typography variant='body2' color='error'>
                         {this.state.errorText}
                     </Typography>
                 </Paper>
+                <Dialog open={this.state.dialogOpen}
+                    onClose={this.handleDialogClose}
+                >
+                    <DialogTitle>{this.state.dialogTitle}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {this.state.dialogContent}
+                        </DialogContentText>
+                    </DialogContent>
+                </Dialog>
             </div >
         );
     }
 }
-export default geolocated({
+export default withRouter(geolocated({
     positionOptions: {
         enableHighAccuracy: false,
     },
-    userDecisionTimeout: 10000,
-})(withStyles(styles)(Register));
+    userDecisionTimeout: 1,
+})(withStyles(styles)(Register)));
