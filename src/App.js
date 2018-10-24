@@ -5,20 +5,18 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/dashboard';
 import fireb from './fireb';
-import { geolocated } from 'react-geolocated';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loginState: false,
-      email: '',
+      loginState: window.localStorage.getItem('loggedIn'),
+      email: window.localStorage.getItem('UID'),
     }
   }
   componentDidMount() {
     fireb.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log('Auth state changed');
         this.setState({ loginState: true, email: user.email });
       }
     });
@@ -33,7 +31,7 @@ class App extends Component {
             <Route path='/register' component={Register} />
             <Route path='/dashboard' render={(props) => {
               return this.state.loginState ? (<Dashboard {...props} username={this.state.email}
-                latitude={this.props.coords.latitude} longitude={this.props.coords.longitude} />) : (<Redirect to='/login' />);
+                />) : (<Redirect to='/login' />);
             }} />
           </Switch>
         </main>
@@ -42,9 +40,4 @@ class App extends Component {
   }
 }
 
-export default geolocated({
-  positionOptions: {
-    enableHighAccuracy: false,
-  },
-  userDecisionTimeout: 1,
-})(App);
+export default App;

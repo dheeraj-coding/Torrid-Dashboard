@@ -21,6 +21,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import {
     Visibility,
 } from '@material-ui/icons';
+import { geolocated } from 'react-geolocated';
+
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -57,13 +59,6 @@ class Dashboard extends Component {
             open: false,
         };
         this.dbRef = {};
-        getPostcode(this.props.latitude, this.props.longitude, (postcode) => {
-            console.log(postcode);
-            this.dbRef = fireb.database().ref('locations/' + postcode + '/affected');
-            this.dbRef.on('value', (snapshot) => {
-                this.setState({ users: snapshot.val() });
-            });
-        })
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
     }
@@ -75,6 +70,14 @@ class Dashboard extends Component {
     }
     render() {
         const { classes } = this.props;
+        if (this.props.coords) {
+            getPostcode(this.props.coords.latitude, this.props.coords.longitude, (postcode) => {
+                this.dbRef = fireb.database().ref('locations/' + postcode + '/affected');
+                this.dbRef.on('value', (snapshot) => {
+                    this.setState({ users: snapshot.val() });
+                });
+            });
+        }
         return (
             <div>
                 <Paper className={classes.paper} elevation={3}>
@@ -131,7 +134,6 @@ class Dashboard extends Component {
                             </Typography>
                         </Toolbar>
                     </AppBar>
-                    {console.log(this.state.activeUser)}
                     <Maps name={this.state.activeUser['name']}
                         title={this.state.activeUser['name'] + ':' + this.state.activeUser['phone']}
                         position={{ lat: this.state.activeUser['lat'], lng: this.state.activeUser['lon'] }} />
@@ -141,4 +143,9 @@ class Dashboard extends Component {
     }
 }
 
-export default (withStyles(styles)(Dashboard));
+export default geolocated({
+    positionOptions: {
+        enableHighAccuracy: false,
+    },
+    userDecisionTimeout: 1,
+})(withStyles(styles)(Dashboard));
