@@ -5,6 +5,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/dashboard';
 import fireb from './fireb';
+import { geolocated } from 'react-geolocated';
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -30,7 +32,8 @@ class App extends Component {
             <Route path='/login' component={Login} />
             <Route path='/register' component={Register} />
             <Route path='/dashboard' render={(props) => {
-              return this.state.loginState ? (<Dashboard {...props} username={this.state.email} />) : (<Redirect to='/login' />);
+              return this.state.loginState ? (<Dashboard {...props} username={this.state.email}
+                latitude={this.props.coords.latitude} longitude={this.props.coords.longitude} />) : (<Redirect to='/login' />);
             }} />
           </Switch>
         </main>
@@ -39,4 +42,9 @@ class App extends Component {
   }
 }
 
-export default App;
+export default geolocated({
+  positionOptions: {
+    enableHighAccuracy: false,
+  },
+  userDecisionTimeout: 1,
+})(App);
