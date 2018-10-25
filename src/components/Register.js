@@ -64,7 +64,8 @@ class Register extends Component {
                         repeat: repeat,
                         lat: this.props.coords.latitude,
                         lon: this.props.coords.longitude,
-                    }
+                    },
+                    crossDomain: true,
                 }).then((res) => {
                     this.props.history.push('/login');
                 }, (err) => {

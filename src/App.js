@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import MyAppBar from './components/AppBar';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Login from './components/Login';
+import Affected from './components/Affected'
 import Register from './components/Register';
 import Dashboard from './components/dashboard';
 import fireb from './fireb';
@@ -31,8 +32,9 @@ class App extends Component {
             <Route path='/register' component={Register} />
             <Route path='/dashboard' render={(props) => {
               return this.state.loginState ? (<Dashboard {...props} username={this.state.email}
-                />) : (<Redirect to='/login' />);
+              />) : (<Redirect to='/login' />);
             }} />
+            <Route path='/affected' component={Affected} />
           </Switch>
         </main>
       </div>

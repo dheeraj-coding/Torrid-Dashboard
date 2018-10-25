@@ -10,9 +10,13 @@ class MapContainer extends Component {
     }
     render() {
         return (
-            <Map google={this.props.google} zoom={8} style={{ width: '100%', height: '100%' }} initialCenter={this.props.position} >
-                <Marker name={this.props.name} title={this.props.title} position={this.props.position} />
-            </Map>
+            <div style={{ width: '100%', height: '100%' }}>
+                <Map google={this.props.google} zoom={8} style={{ width: '100%', height: '100%' }} initialCenter={this.props.position[0]} >
+                    {this.props.position.map((val, index) => (
+                        <Marker name={this.props.name[index]} title={this.props.title[index]} position={val} key={index} />
+                    ))}
+                </Map>
+            </div>
         );
     }
 }

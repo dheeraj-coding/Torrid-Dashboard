@@ -134,9 +134,9 @@ class Dashboard extends Component {
                             </Typography>
                         </Toolbar>
                     </AppBar>
-                    <Maps name={this.state.activeUser['name']}
-                        title={this.state.activeUser['name'] + ':' + this.state.activeUser['phone']}
-                        position={{ lat: this.state.activeUser['lat'], lng: this.state.activeUser['lon'] }} />
+                    <Maps name={[this.state.activeUser['name']]}
+                        title={[this.state.activeUser['name'] + ':' + this.state.activeUser['phone']]}
+                        position={[{ lat: this.state.activeUser['lat'], lng: this.state.activeUser['lon'] }]} />
                 </Dialog>
             </div>
         );

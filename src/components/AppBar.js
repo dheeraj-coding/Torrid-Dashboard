@@ -34,6 +34,7 @@ class MyAppBar extends Component {
                         <Typography variant='headline' className={classes.grow}>
                             Torrid
                         </Typography>
+                        <Button color='inherit' onClick={this.handlClick('affected')}>Affected Regions</Button>
                         <Button color='inherit' onClick={this.handlClick('login')}>Login</Button>
                         <Button color='inherit' onClick={this.handlClick('register')}>Register</Button>
                     </Toolbar>
