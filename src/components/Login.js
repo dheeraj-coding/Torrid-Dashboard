@@ -35,7 +35,8 @@ class Login extends Component {
         this.state = {
             dialogContent: '',
             dialogTitle: '',
-            dialogOpen: false
+            dialogOpen: false,
+            disableLogin: false,
         };
         this.handleLogin = this.handleLogin.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this);
@@ -43,10 +44,16 @@ class Login extends Component {
     handleLogin(event) {
         const username = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
+        this.setState({ disableLogin: true });
         fireb.auth().signInWithEmailAndPassword(username, pass).then((res) => {
             this.props.history.push('/dashboard');
         }).catch((err) => {
-            this.setState({ dialogOpen: true, dialogContent: 'Invalid Username or Password', dialogTitle: 'Login Failed' });
+            this.setState({
+                dialogOpen: true,
+                dialogContent: 'Invalid Username or Password',
+                dialogTitle: 'Login Failed',
+                disableLogin: false,
+            });
         });
     }
     handleDialogClose(event) {
@@ -78,7 +85,7 @@ class Login extends Component {
                     />
                     <br />
                     <br />
-                    <Button variant='contained' color='primary' onClick={this.handleLogin}>
+                    <Button variant='contained' color='primary' onClick={this.handleLogin} disabled={this.state.disableLogin}>
                         Login
                     </Button>
                 </Paper>

@@ -43,7 +43,8 @@ class Register extends Component {
             errorState: false,
             dialogContent: '',
             dialogTitle: '',
-            dialogOpen: false
+            dialogOpen: false,
+            registerDisable: false,
         };
         this.handleRegister = this.handleRegister.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this);
@@ -52,8 +53,8 @@ class Register extends Component {
         const username = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
         const repeat = document.getElementById('repeatpassword').value;
-        if (pass === repeat && this.props.isGeolocationEnabled) {
-            this.setState({ username: username, password: pass, errorState: false, errorText: '' });
+        if (pass === repeat && pass.length >= 6 && this.props.isGeolocationEnabled) {
+            this.setState({ username: username, password: pass, errorState: false, errorText: '', registerDisable: true });
             fireb.auth().createUserWithEmailAndPassword(username, pass).then((res) => {
                 axios({
                     method: 'POST',
@@ -69,15 +70,27 @@ class Register extends Component {
                 }).then((res) => {
                     this.props.history.push('/login');
                 }, (err) => {
-                    this.setState({ dialogOpen: true, dialogContent: 'Sorry! Our servers are facing issues please try again in sometime.', dialogTitle: 'Registration Failed' });
+                    this.setState({
+                        dialogOpen: true,
+                        dialogContent: 'Sorry! Our servers are facing issues please try again in sometime.',
+                        dialogTitle: 'Registration Failed',
+                        registerDisable: false,
+                    });
                 });
             }).catch((err) => {
-                this.setState({ dialogOpen: true, dialogContent: 'Sorry! Our servers are facing issues please try again in sometime.', dialogTitle: 'Registration Failed' });
+                this.setState({
+                    dialogOpen: true,
+                    dialogContent: 'Sorry! Our servers are facing issues please try again in sometime.',
+                    dialogTitle: 'Registration Failed',
+                    registerDisable: false,
+                });
             });
 
         } else {
             if (!this.props.isGeolocationEnabled) {
                 this.setState({ errorText: 'Geolocation must be enabled', errorState: true });
+            } else if (pass.length < 6) {
+                this.setState({ errorText: 'Minimum Password length is 6 characters', errorState: true });
             } else {
                 this.setState({ errorText: 'Passwords don\'t match', errorState: true });
             }
@@ -117,7 +130,7 @@ class Register extends Component {
                     />
                     <br />
                     <br />
-                    <Button variant='contained' color='primary' onClick={this.handleRegister}>
+                    <Button variant='contained' color='primary' onClick={this.handleRegister} disabled={this.state.registerDisable}>
                         Register
                     </Button>
                     <br />
