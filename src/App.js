@@ -6,6 +6,26 @@ import Affected from './components/Affected'
 import Register from './components/Register';
 import Dashboard from './components/dashboard';
 import fireb from './fireb';
+import {
+  Typography,
+  Button,
+} from '@material-ui/core';
+
+function Index(props) {
+  return (
+    <div style={{
+      margin: '20vh auto',
+      textAlign: 'center',
+    }}>
+      <Typography variant='display3'
+      >Join Us, Save Lives</Typography>
+      <br />
+      <Button color='primary' onClick={(event) => {
+        this.props.history.push('/register');
+      }} variant='outlined' size='large'>Register</Button>
+    </div>
+  );
+}
 
 class App extends Component {
   constructor(props) {
@@ -28,6 +48,7 @@ class App extends Component {
         <MyAppBar />
         <main>
           <Switch>
+            <Route path='/' exact component={Index.bind(this)} />
             <Route path='/login' component={Login} />
             <Route path='/register' component={Register} />
             <Route path='/dashboard' render={(props) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 import fireb from './fireb';
 
@@ -15,7 +15,8 @@ fireb.auth().onAuthStateChanged((user) => {
 
 ReactDOM.render(
     <BrowserRouter>
-        <App />
+        {/* <App /> */}
+        <Route path='/' component={App} />
     </BrowserRouter>
     , document.getElementById('root'));
 
