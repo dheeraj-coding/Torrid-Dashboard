@@ -48,7 +48,7 @@ class App extends Component {
         <MyAppBar />
         <main>
           <Switch>
-            <Route path='/' exact component={Index.bind(this)} />
+            <Route path='/dashboard.html' exact component={Index.bind(this)} />
             <Route path='/login' component={Login} />
             <Route path='/register' component={Register} />
             <Route path='/dashboard' render={(props) => {
